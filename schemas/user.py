@@ -27,3 +27,16 @@ class TokenPayload(BaseModel):
     email: str
     exp: int
     iat: int
+
+
+class ProtectedResponse(BaseModel):
+    """Respuesta de ruta protegida."""
+    message: str
+    user_id: str
+    authenticated: bool
+
+
+class AuthTestResponse(BaseModel):
+    """Respuesta del endpoint de prueba de auth."""
+    message: str
+    supabase_configured: bool

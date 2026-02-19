@@ -3,19 +3,24 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 from database import get_db
 from auth.dependencies import get_current_user, require_auth
-from schemas.user import UserResponse, TokenPayload
+from schemas.user import UserResponse, TokenPayload, ProtectedResponse, AuthTestResponse
+from config import settings
 import models
 
-router = APIRouter(prefix="/api/auth", tags=["authentication"])
+router = APIRouter(prefix="/api/auth", tags=["Autenticación"])
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-@router.get("/me", response_model=UserResponse)
+@router.get(
+    "/me",
+    response_model=UserResponse,
+    summary="Usuario actual",
+    description="Devuelve la información del usuario autenticado (JWT). Crea el usuario en BD si no existe.",
+)
 async def get_current_user_info(
     current_user: TokenPayload = Depends(get_current_user),
     db: db_dependency = None
 ):
-    """Obtener información del usuario autenticado"""
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -38,18 +43,26 @@ async def get_current_user_info(
     
     return db_user
 
-@router.get("/protected")
+@router.get(
+    "/protected",
+    response_model=ProtectedResponse,
+    summary="Ruta protegida",
+    description="Ejemplo de ruta que requiere autenticación. Devuelve saludo y datos del usuario.",
+)
 async def protected_route(current_user: TokenPayload = Depends(require_auth)):
-    """Ruta protegida"""
     return {
         "message": f"¡Hola {current_user.email}!",
         "user_id": current_user.sub,
         "authenticated": True
     }
 
-@router.get("/test")
+@router.get(
+    "/test",
+    response_model=AuthTestResponse,
+    summary="Probar auth",
+    description="Comprueba que el router de autenticación y la configuración de Supabase responden.",
+)
 async def test_auth():
-    """Test endpoint"""
     return {
         "message": "Auth router funcionando",
         "supabase_configured": bool(settings.supabase_url)

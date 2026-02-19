@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, Table, DateTime, func
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, Table, DateTime, func, Boolean
 from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
@@ -33,6 +33,7 @@ class Word(Base):
     id = Column(Integer, primary_key=True, index=True)
     word = Column(String(100), unique=True, nullable=False)
     meaning = Column(Text, nullable=False)
+    is_active = Column(Boolean, default=False, nullable=False)
 
     categories = relationship("Category", secondary=word_category, back_populates="words")
     examples = relationship("WordExample", back_populates="word", cascade="all, delete-orphan")
@@ -43,6 +44,7 @@ class WordExample(Base):
     id = Column(Integer, primary_key=True, index=True)
     text = Column(Text, nullable=False)
     word_id = Column(Integer, ForeignKey("words.id"))
+    is_active = Column(Boolean, default=False, nullable=False)
 
     word = relationship("Word", back_populates="examples")
 
@@ -55,6 +57,7 @@ class Insult(Base):
     id = Column(Integer, primary_key=True, index=True)
     insult = Column(String(100), unique=True, nullable=False)
     meaning = Column(Text, nullable=False)
+    is_active = Column(Boolean, default=False, nullable=False)
 
     examples = relationship("InsultExample", back_populates="insult", cascade="all, delete-orphan")
     comments = relationship("InsultComment", back_populates="insult", cascade="all, delete-orphan")
@@ -65,6 +68,7 @@ class InsultExample(Base):
     id = Column(Integer, primary_key=True, index=True)
     text = Column(Text, nullable=False)
     insult_id = Column(Integer, ForeignKey("insults.id"))
+    is_active = Column(Boolean, default=False, nullable=False)
 
     insult = relationship("Insult", back_populates="examples")
 

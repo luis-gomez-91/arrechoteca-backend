@@ -1,6 +1,7 @@
 # main.py
 import os
 from fastapi import FastAPI, Depends
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Annotated
 from dotenv import load_dotenv
@@ -19,7 +20,11 @@ load_dotenv()
 # ------------------------------
 # Inicializar la app
 # ------------------------------
-app = FastAPI(title="ANT Simulator", version="1.0")
+app = FastAPI(
+    title="Arrechoteca",
+    version="1.0",
+    description="Diccionario de jerga guayaca: palabras y expresiones coloquiales de la costa ecuatoriana. Consulta significados, ejemplos y (con cuenta) comenta palabras o accede a insultos de la jerga.",
+)
 
 # ------------------------------
 # Configuración CORS CORREGIDA
@@ -70,13 +75,22 @@ db_dependency = Annotated[Session, Depends(get_db)]
 # ------------------------------
 # Root endpoint
 # ------------------------------
+class RootResponse(BaseModel):
+    status: str
+    message: str
+
+
 @app.get(
     "/",
+    response_model=RootResponse,
     summary="Raíz",
     description="Mensaje de bienvenida a la API de Arrechoteca (diccionario de jerga guayaca).",
 )
 def root():
-    return {'status': 'success', 'message': 'Bienvenido a ANT Simulator - by Luis Gómez'}
+    return RootResponse(
+        status="success",
+        message="Diccionario de jerga guayaca: palabras y expresiones coloquiales de la costa ecuatoriana. Consulta significados, ejemplos y (con cuenta) comenta palabras o accede a insultos de la jerga.",
+    )
 
 # ------------------------------
 # Routers
