@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, Table, DateTime, func
 from sqlalchemy.orm import relationship
 from database import Base
+from datetime import datetime
 
 # ==============================
 # MANY-TO-MANY RELATIONSHIP
@@ -68,6 +69,19 @@ class InsultExample(Base):
     insult = relationship("Insult", back_populates="examples")
 
 # ==============================
+# USER MODEL (CORREGIDO)
+# ==============================
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(String(255), primary_key=True, index=True)  # UUID de Supabase
+    email = Column(String(255), unique=True, nullable=False, index=True)
+    full_name = Column(String(255), nullable=True)
+    avatar_url = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+# ==============================
 # USER COMMENTS (FORUM STYLE)
 # ==============================
 class InsultComment(Base):
@@ -76,8 +90,8 @@ class InsultComment(Base):
     id = Column(Integer, primary_key=True, index=True)
     insult_id = Column(Integer, ForeignKey("insults.id"), nullable=False)
 
-    # Usuario (puede ser el uuid de Supabase)
-    user_id = Column(String(255), nullable=False)
+    # Usuario (UUID de Supabase)
+    user_id = Column(String(255), ForeignKey("users.id"), nullable=False)
 
     comment = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -103,4 +117,6 @@ class InsultComment(Base):
 
     # Relación con el insulto principal
     insult = relationship("Insult", back_populates="comments")
-
+    
+    # Relación con el usuario
+    user = relationship("User")

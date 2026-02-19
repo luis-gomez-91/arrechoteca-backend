@@ -1,3 +1,4 @@
+# main.py
 import os
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
@@ -18,56 +19,56 @@ load_dotenv()
 # ------------------------------
 # Inicializar la app
 # ------------------------------
-app = FastAPI(
-    title="Arrechoteca",
-    version="1.0",
-    description="Diccionario de jerga guayaca: palabras y expresiones coloquiales de la costa ecuatoriana. Consulta significados, ejemplos y (con cuenta) comenta palabras o accede a insultos de la jerga.",
-)
+app = FastAPI(title="ANT Simulator", version="1.0")
 
 # ------------------------------
-# Configuración CORS
+# Configuración CORS CORREGIDA
 # ------------------------------
 origins = [
-    "https://luis-gomez-91.github.io",
-    "https://www.luis-gomez-91.github.io",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://localhost:5173",
+    "http://localhost:3000",           # Next.js dev
+    "http://127.0.0.1:3000",          # Next.js dev alternativo
+    "http://192.168.100.38:3000",     # ← AGREGAR ESTA LÍNEA
+    "https://tu-dominio.com",          # Producción - cambia por tu dominio
+    "http://localhost:8000",           # FastAPI dev
+    "http://127.0.0.1:8000",          # FastAPI dev alternativo
+    "http://192.168.2.250:3000"
 ]
 
+# IMPORTANTE: CORS debe ir ANTES de otros middlewares
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Lista de URLs permitidas
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Específico
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # ------------------------------
 # Middleware de seguridad
 # ------------------------------
-# Redirigir a HTTPS solo en producción
+# Solo HTTPS en producción
 if os.getenv("RAILWAY_ENVIRONMENT") == "production":
     app.add_middleware(HTTPSRedirectMiddleware)
 
-# Configurar TrustedHost (recomendado especificar hosts en producción)
+# TrustedHost
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"],  # Cambiar "*" por tus dominios en producción
+    allowed_hosts=["*"],  # En producción, especifica tus dominios
 )
 
 # ------------------------------
-# Crear tablas de la base de datos
+# Crear tablas
 # ------------------------------
 models.Base.metadata.create_all(bind=engine)
 
 # ------------------------------
-# Dependencia de base de datos
+# Dependencia DB
 # ------------------------------
 db_dependency = Annotated[Session, Depends(get_db)]
 
 # ------------------------------
-# Endpoints
+# Root endpoint
 # ------------------------------
 @app.get(
     "/",
@@ -75,11 +76,13 @@ db_dependency = Annotated[Session, Depends(get_db)]
     description="Mensaje de bienvenida a la API de Arrechoteca (diccionario de jerga guayaca).",
 )
 def root():
-    return {'status': 'success', 'message': 'Bienvenido a Arrechoteca - by Luis Gómez'}
+    return {'status': 'success', 'message': 'Bienvenido a ANT Simulator - by Luis Gómez'}
 
 # ------------------------------
-# Routers (si tienes otros módulos)
+# Routers
 # ------------------------------
-from routers import categories, words
+from routers import categories, words, auth, insults
 app.include_router(categories.router)
 app.include_router(words.router)
+app.include_router(auth.router)
+app.include_router(insults.router)
