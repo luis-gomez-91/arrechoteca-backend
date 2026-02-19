@@ -9,7 +9,7 @@ import models
 
 router = APIRouter(
     prefix="/words",
-    tags=["Words"],
+    tags=["Palabras"],
     responses={404: {"description": "Not found"}},
 )
 

@@ -15,10 +15,10 @@ class Word(WordBase):
     categories: List[Category] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class WordExampleBase(BaseModel):
     text: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -9,7 +9,7 @@ from schemas.words import WordBase
 
 router = APIRouter(
     prefix="/categories",
-    tags=["Categories"],
+    tags=["Categorías"],
     responses={404: {"description": "Not found"}},
 )
 
