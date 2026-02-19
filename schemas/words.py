@@ -44,6 +44,7 @@ class WordCreate(WordBase):
 class Word(WordBase):
     id: int
     categories: List[Category] = []
+    examples: List[WordExample] = []
     is_active: bool = False
 
     class Config:
