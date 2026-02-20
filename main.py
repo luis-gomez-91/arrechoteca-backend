@@ -36,7 +36,8 @@ origins = [
     "https://tu-dominio.com",          # Producción - cambia por tu dominio
     "http://localhost:8000",           # FastAPI dev
     "http://127.0.0.1:8000",          # FastAPI dev alternativo
-    "http://192.168.2.250:3000"
+    "http://192.168.2.250:3000",
+    "https://arrechoteca-web.vercel.app/"
 ]
 
 # IMPORTANTE: CORS debe ir ANTES de otros middlewares
