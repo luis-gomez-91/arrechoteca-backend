@@ -37,7 +37,7 @@ origins = [
     "http://localhost:8000",           # FastAPI dev
     "http://127.0.0.1:8000",          # FastAPI dev alternativo
     "http://192.168.2.250:3000",
-    "https://arrechoteca-web.vercel.app/"
+    "https://arrechoteca-web.vercel.app",
 ]
 
 # IMPORTANTE: CORS debe ir ANTES de otros middlewares
