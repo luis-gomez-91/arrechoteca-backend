@@ -30,13 +30,8 @@ app = FastAPI(
 # Configuración CORS CORREGIDA
 # ------------------------------
 origins = [
-    "http://localhost:3000",           # Next.js dev
-    "http://127.0.0.1:3000",          # Next.js dev alternativo
-    "http://192.168.100.38:3000",     # ← AGREGAR ESTA LÍNEA
-    "https://tu-dominio.com",          # Producción - cambia por tu dominio
-    "http://localhost:8000",           # FastAPI dev
-    "http://127.0.0.1:8000",          # FastAPI dev alternativo
-    "http://192.168.2.250:3000"
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 # IMPORTANTE: CORS debe ir ANTES de otros middlewares
