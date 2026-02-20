@@ -217,3 +217,26 @@ def add_examples_to_word(
     db.refresh(word)
     return word
 
+
+@router.put(
+    "/examples/{example_id}",
+    response_model=WordExample,
+    summary="Editar ejemplo de una palabra",
+    description="Actualiza un ejemplo de uso por ID de ejemplo (texto y/o is_active). Requiere autenticación.",
+)
+def update_word_example(
+    example_id: int,
+    example_data: WordExampleBase,
+    db: Session = Depends(get_db),
+    current_user: TokenPayload = Depends(require_auth),
+):
+    example = db.query(models.WordExample).filter(models.WordExample.id == example_id).first()
+    if not example:
+        raise HTTPException(status_code=404, detail=f"Ejemplo con ID {example_id} no encontrado")
+
+    example.text = example_data.text
+    example.is_active = example_data.is_active
+    db.commit()
+    db.refresh(example)
+    return example
+
