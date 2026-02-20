@@ -4,7 +4,7 @@ from sqlalchemy import func
 from typing import List
 
 from database import get_db
-from auth.dependencies import require_auth
+from auth.dependencies import require_auth, security
 from schemas.user import TokenPayload
 from schemas.words import Word, WordExampleBase, WordCreate, WordExample, WordPaginated, WordDeleteResponse
 import models
@@ -125,9 +125,13 @@ def create_words_bulk(
     "/{word_id}",
     response_model=WordDeleteResponse,
     summary="Eliminar palabra",
-    description="Elimina una palabra por ID. Devuelve confirmación y el ID eliminado.",
+    description="Elimina una palabra por ID. Devuelve confirmación y el ID eliminado. Requiere autenticación.",
 )
-def delete_word(word_id: int, db: Session = Depends(get_db)):
+def delete_word(
+    word_id: int,
+    db: Session = Depends(get_db),
+    current_user: TokenPayload = Depends(require_auth),
+):
     # Buscar la palabra por ID
     word = db.query(models.Word).filter(models.Word.id == word_id).first()
     
@@ -164,9 +168,14 @@ def delete_word(word_id: int, db: Session = Depends(get_db)):
     "/{word_id}",
     response_model=Word,
     summary="Actualizar palabra",
-    description="Actualiza una palabra existente por ID (texto, significado y categorías).",
+    description="Actualiza una palabra existente por ID (texto, significado y categorías). Requiere autenticación.",
 )
-def update_word(word_id: int, word_data: WordCreate, db: Session = Depends(get_db)):
+def update_word(
+    word_id: int,
+    word_data: WordCreate,
+    db: Session = Depends(get_db),
+    current_user: TokenPayload = Depends(require_auth),
+):
     # Buscar la palabra por ID
     word = db.query(models.Word).filter(models.Word.id == word_id).first()
     if not word:
@@ -216,4 +225,29 @@ def add_examples_to_word(
     db.commit()
     db.refresh(word)
     return word
+
+
+@router.put(
+    "/examples/{example_id}",
+    response_model=WordExample,
+    summary="Editar ejemplo de una palabra",
+    description="Actualiza un ejemplo de uso por ID de ejemplo (texto y/o is_active). Requiere autenticación.",
+)
+def update_word_example(
+    example_id: int,
+    example_data: WordExampleBase,
+    db: Session = Depends(get_db),
+    credentials=Depends(security),
+    current_user: TokenPayload = Depends(require_auth),
+):
+    print("[PUT /words/examples] Token recibido:", credentials.credentials if credentials else "(ninguno)")
+    example = db.query(models.WordExample).filter(models.WordExample.id == example_id).first()
+    if not example:
+        raise HTTPException(status_code=404, detail=f"Ejemplo con ID {example_id} no encontrado")
+
+    example.text = example_data.text
+    example.is_active = example_data.is_active
+    db.commit()
+    db.refresh(example)
+    return example
 
