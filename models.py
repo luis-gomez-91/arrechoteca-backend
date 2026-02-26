@@ -49,6 +49,18 @@ class WordExample(Base):
     word = relationship("Word", back_populates="examples")
 
 # ==============================
+# INSULT TAG (un tag por insulto: regional, fuerte, etc.)
+# ==============================
+class InsultTag(Base):
+    __tablename__ = "insult_tags"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(80), unique=True, nullable=False)
+
+    insults = relationship("Insult", back_populates="tag")
+
+
+# ==============================
 # INSULT MODEL
 # ==============================
 class Insult(Base):
@@ -58,9 +70,12 @@ class Insult(Base):
     insult = Column(String(100), unique=True, nullable=False)
     meaning = Column(Text, nullable=False)
     is_active = Column(Boolean, default=False, nullable=False)
+    tag_id = Column(Integer, ForeignKey("insult_tags.id"), nullable=True)
 
+    tag = relationship("InsultTag", back_populates="insults")
     examples = relationship("InsultExample", back_populates="insult", cascade="all, delete-orphan")
     comments = relationship("InsultComment", back_populates="insult", cascade="all, delete-orphan")
+    stars = relationship("InsultStar", back_populates="insult", cascade="all, delete-orphan")
 
 class InsultExample(Base):
     __tablename__ = "insult_examples"
@@ -121,6 +136,50 @@ class InsultComment(Base):
 
     # Relación con el insulto principal
     insult = relationship("Insult", back_populates="comments")
-    
+
     # Relación con el usuario
+    user = relationship("User")
+
+    # Estrellitas: un usuario solo puede dar una por comentario
+    stars = relationship("CommentStar", back_populates="comment", cascade="all, delete-orphan")
+    # Likes: un usuario solo puede dar un like por comentario
+    likes = relationship("CommentLike", back_populates="comment", cascade="all, delete-orphan")
+
+
+# ==============================
+# COMMENT STAR (una estrellita por usuario por comentario)
+# ==============================
+class CommentStar(Base):
+    __tablename__ = "comment_stars"
+
+    comment_id = Column(Integer, ForeignKey("insult_comments.id"), primary_key=True)
+    user_id = Column(String(255), ForeignKey("users.id"), primary_key=True)
+
+    comment = relationship("InsultComment", back_populates="stars")
+    user = relationship("User")
+
+
+# ==============================
+# COMMENT LIKE (un like por usuario por comentario de insulto)
+# ==============================
+class CommentLike(Base):
+    __tablename__ = "comment_likes"
+
+    comment_id = Column(Integer, ForeignKey("insult_comments.id"), primary_key=True)
+    user_id = Column(String(255), ForeignKey("users.id"), primary_key=True)
+
+    comment = relationship("InsultComment", back_populates="likes")
+    user = relationship("User")
+
+
+# ==============================
+# INSULT STAR (una estrellita por usuario por insulto)
+# ==============================
+class InsultStar(Base):
+    __tablename__ = "insult_stars"
+
+    insult_id = Column(Integer, ForeignKey("insults.id"), primary_key=True)
+    user_id = Column(String(255), ForeignKey("users.id"), primary_key=True)
+
+    insult = relationship("Insult", back_populates="stars")
     user = relationship("User")

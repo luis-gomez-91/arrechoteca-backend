@@ -4,7 +4,7 @@ from sqlalchemy import func
 from typing import List
 
 from database import get_db
-from auth.dependencies import require_auth, security
+from auth.dependencies import require_auth, ensure_user_in_db, security
 from schemas.user import TokenPayload
 from schemas.words import Word, WordExampleBase, WordCreate, WordExample, WordPaginated, WordDeleteResponse
 import models
@@ -59,7 +59,7 @@ def get_examples(word_id: int, db: Session = Depends(get_db)):
 def create_word(
     word_data: WordCreate,
     db: Session = Depends(get_db),
-    current_user: TokenPayload = Depends(require_auth),
+    current_user: TokenPayload = Depends(ensure_user_in_db),
 ):
     # Crear la palabra
     new_word = models.Word(
@@ -93,7 +93,7 @@ def create_word(
 def create_words_bulk(
     words_data: List[WordCreate],
     db: Session = Depends(get_db),
-    current_user: TokenPayload = Depends(require_auth),
+    current_user: TokenPayload = Depends(ensure_user_in_db),
 ):
     created_words = []
 
@@ -130,7 +130,7 @@ def create_words_bulk(
 def delete_word(
     word_id: int,
     db: Session = Depends(get_db),
-    current_user: TokenPayload = Depends(require_auth),
+    current_user: TokenPayload = Depends(ensure_user_in_db),
 ):
     # Buscar la palabra por ID
     word = db.query(models.Word).filter(models.Word.id == word_id).first()
@@ -174,7 +174,7 @@ def update_word(
     word_id: int,
     word_data: WordCreate,
     db: Session = Depends(get_db),
-    current_user: TokenPayload = Depends(require_auth),
+    current_user: TokenPayload = Depends(ensure_user_in_db),
 ):
     # Buscar la palabra por ID
     word = db.query(models.Word).filter(models.Word.id == word_id).first()
@@ -210,7 +210,7 @@ def add_examples_to_word(
     word_id: int,
     example_data: WordExampleBase,
     db: Session = Depends(get_db),
-    current_user: TokenPayload = Depends(require_auth),
+    current_user: TokenPayload = Depends(ensure_user_in_db),
 ):
     word = db.query(models.Word).options(joinedload(models.Word.examples)).filter(models.Word.id == word_id).first()
     if not word:
@@ -238,7 +238,7 @@ def update_word_example(
     example_data: WordExampleBase,
     db: Session = Depends(get_db),
     credentials=Depends(security),
-    current_user: TokenPayload = Depends(require_auth),
+    current_user: TokenPayload = Depends(ensure_user_in_db),
 ):
     print("[PUT /words/examples] Token recibido:", credentials.credentials if credentials else "(ninguno)")
     example = db.query(models.WordExample).filter(models.WordExample.id == example_id).first()

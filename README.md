@@ -63,6 +63,10 @@ Este repositorio es el **backend** de Arrechoteca: una API REST hecha con FastAP
 - `schemas/` — Esquemas Pydantic para request/response.
 - `alembic/` — Migraciones de base de datos.
 
+### Admin de puteadas (insultos)
+
+Para integrar el panel de administración de insultos/puteadas con la API, usa la guía **[ADMIN_PUTEADAS.md](ADMIN_PUTEADAS.md)**: endpoints, métodos, cuerpos de petición y autenticación. La documentación interactiva está en **http://localhost:8000/docs** (tag «Bad Words»).
+
 ## Autor
 
 Luis Gómez
