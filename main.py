@@ -26,13 +26,13 @@
         description="Diccionario de jerga guayaca: palabras y expresiones coloquiales de la costa ecuatoriana. Consulta significados, ejemplos y (con cuenta) comenta palabras o accede a insultos de la jerga.",
     )
 
-    # ------------------------------
-    # Configuración CORS CORREGIDA
-    # ------------------------------
-    origins = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
+# ------------------------------
+# Configuración CORS CORREGIDA
+# ------------------------------
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
     # IMPORTANTE: CORS debe ir ANTES de otros middlewares
     app.add_middleware(
