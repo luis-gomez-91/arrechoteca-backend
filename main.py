@@ -54,14 +54,12 @@ app.add_middleware(
 # ------------------------------
 # Middleware de seguridad
 # ------------------------------
-# Solo HTTPS en producción
 if os.getenv("RAILWAY_ENVIRONMENT") == "production":
     app.add_middleware(HTTPSRedirectMiddleware)
 
-# TrustedHost
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"],  # En producción, especifica tus dominios
+    allowed_hosts=["*"],
 )
 
 # ------------------------------

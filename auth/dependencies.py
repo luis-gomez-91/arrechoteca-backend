@@ -4,8 +4,12 @@ from typing import Optional
 import os
 import jwt
 from jwt import PyJWKClient
+from sqlalchemy.orm import Session
+
 from config import settings
+from database import get_db
 from schemas.user import TokenPayload
+import models
 
 # En macOS, Python a veces no encuentra los certificados SSL; certifi los proporciona.
 try:
@@ -86,3 +90,24 @@ async def require_auth(token: str = Depends(security)) -> TokenPayload:
     except Exception as e:
         print(f"JWT Error: {e}")
         raise HTTPException(status_code=401, detail="Token verification failed")
+
+
+def ensure_user_in_db(
+    current_user: TokenPayload = Depends(require_auth),
+    db: Session = Depends(get_db),
+) -> TokenPayload:
+    """
+    Requiere autenticación y asegura que el usuario exista en la tabla users
+    (upsert por id). Usar en rutas que escriben user_id en tablas con FK a users.
+    """
+    user = db.query(models.User).filter(models.User.id == current_user.sub).first()
+    if not user:
+        user = models.User(
+            id=current_user.sub,
+            email=current_user.email,
+            full_name=None,
+            avatar_url=None,
+        )
+        db.add(user)
+        db.commit()
+    return current_user
