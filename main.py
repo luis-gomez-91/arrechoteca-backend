@@ -27,25 +27,26 @@ app = FastAPI(
 )
 
 # ------------------------------
-# Configuración CORS CORREGIDA
+# Configuración CORS
 # ------------------------------
+# Origen exacto: sin barra final (el navegador envía "https://arrechoteca-web.vercel.app")
 origins = [
-    "http://localhost:3000",           # Next.js dev
-    "http://127.0.0.1:3000",          # Next.js dev alternativo
-    "http://192.168.100.38:3000",     # ← AGREGAR ESTA LÍNEA
-    "https://tu-dominio.com",          # Producción - cambia por tu dominio
-    "http://localhost:8000",           # FastAPI dev
-    "http://127.0.0.1:8000",          # FastAPI dev alternativo
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://192.168.100.38:3000",
     "http://192.168.2.250:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "https://arrechoteca-web.vercel.app",
+    "https://www.arrechoteca-web.vercel.app",
 ]
 
-# IMPORTANTE: CORS debe ir ANTES de otros middlewares
+# CORS se añade primero para que envuelva todo (incluidas respuestas de error)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Específico
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
