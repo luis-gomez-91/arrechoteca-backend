@@ -29,17 +29,9 @@ app = FastAPI(
 # ------------------------------
 # Configuración CORS
 # ------------------------------
-# Origen exacto: sin barra final (el navegador envía "https://arrechoteca-web.vercel.app")
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://192.168.100.38:3000",
-    "http://192.168.2.250:3000",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "https://arrechoteca-web.vercel.app",
-    "https://www.arrechoteca-web.vercel.app",
-]
+# CORS_ORIGINS: lista separada por comas. Si no está definida o está vacía, se usa la lista por defecto (local + Vercel).
+_cors_env = os.getenv("CORS_ORIGINS", "").strip()
+origins = [x.strip() for x in _cors_env.split(",") if x.strip()]
 
 # CORS se añade primero para que envuelva todo (incluidas respuestas de error)
 app.add_middleware(
