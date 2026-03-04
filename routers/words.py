@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from typing import List
-
 from database import get_db
 from auth.dependencies import require_auth, ensure_user_in_db, security
 from schemas.user import TokenPayload

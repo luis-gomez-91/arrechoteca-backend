@@ -183,3 +183,36 @@ class InsultStar(Base):
 
     insult = relationship("Insult", back_populates="stars")
     user = relationship("User")
+
+
+# ==============================
+# TEST GUAYACO (question; answers in separate model)
+# ==============================
+class TestGuayaco(Base):
+    __tablename__ = "test_guayaco"
+
+    id = Column(Integer, primary_key=True, index=True)
+    question = Column(Text, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+
+    answers = relationship(
+        "TestGuayacoAnswer",
+        back_populates="question",
+        cascade="all, delete-orphan",
+        order_by="TestGuayacoAnswer.order",
+    )
+
+
+# ==============================
+# TEST GUAYACO ANSWERS (4 per question, one correct)
+# ==============================
+class TestGuayacoAnswer(Base):
+    __tablename__ = "test_guayaco_answers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    test_guayaco_id = Column(Integer, ForeignKey("test_guayaco.id"), nullable=False)
+    text = Column(Text, nullable=False)
+    order = Column(Integer, nullable=False)
+    is_correct = Column(Boolean, default=False, nullable=False)
+
+    question = relationship("TestGuayaco", back_populates="answers")

@@ -88,8 +88,9 @@ def root():
 # ------------------------------
 # Routers
 # ------------------------------
-from routers import categories, words, auth, insults
+from routers import categories, words, auth, insults, test_guayaco
 app.include_router(categories.router)
 app.include_router(words.router)
 app.include_router(auth.router)
 app.include_router(insults.router)
+app.include_router(test_guayaco.router)
