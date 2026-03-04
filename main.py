@@ -27,14 +27,13 @@ app = FastAPI(
 )
 
 # ------------------------------
-# Configuración CORS CORREGIDA
+# Configuración CORS
 # ------------------------------
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+# CORS_ORIGINS: lista separada por comas. Si no está definida o está vacía, se usa la lista por defecto (local + Vercel).
+_cors_env = os.getenv("CORS_ORIGINS", "").strip()
+origins = [x.strip() for x in _cors_env.split(",") if x.strip()]
 
-# IMPORTANTE: CORS debe ir ANTES de otros middlewares
+# CORS se añade primero para que envuelva todo (incluidas respuestas de error)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
